@@ -11,7 +11,7 @@
             height: 100%;
         }
         #myCanvas {
-            background-color: #290244; /* Dark purple background */
+            background-color: grey;
             display: block;
             width: 100vw;
             height: 100vh;
@@ -54,123 +54,122 @@
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
 
-        const ballRadius = 7; // Ball radius remains unchanged
-        const traceRadius = ballRadius / 2; // Smaller trace radius
-        const maxBalls = 7;
-        let balls = [];
-        let cornerIndex = 0; // Initialize cornerIndex
+        const paddleWidth = 20;
+        const paddleHeight = 150;
+        const ballRadius = 10;
+        const bulletRadius = 5;
+
+        let player1Y = (canvas.height - paddleHeight) / 2;
+        let player2Y = (canvas.height - paddleHeight) / 2;
+        let player1DY = 0;
+        let player2DY = 0;
+
+        let bullets = [];
+
+        let player1Score = 0;
+        let player2Score = 0;
+
+        let player1Shake = 0;
+        let player2Shake = 0;
+
+        function drawPaddle(x, y, color, shake) {
+            ctx.fillStyle = color;
+            ctx.fillRect(x + shake, y, paddleWidth, paddleHeight);
+        }
 
         function drawBall(ball) {
             ctx.beginPath();
             ctx.arc(ball.x, ball.y, ballRadius, 0, Math.PI * 2);
-            ctx.fillStyle = '#CBC3E3'; 
+            ctx.fillStyle = 'white';
             ctx.fill();
             ctx.closePath();
         }
 
-        function drawTrace(ball) {
-            ball.traces.forEach(trace => {
-                ctx.beginPath();
-                ctx.arc(trace.x, trace.y, traceRadius, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(177, 100, 217, ${trace.alpha})`;
-                ctx.fill();
-                ctx.closePath();
+        function drawBullet(bullet) {
+            ctx.beginPath();
+            ctx.arc(bullet.x, bullet.y, bulletRadius, 0, Math.PI * 2);
+            ctx.fillStyle = 'red';
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        function drawScores() {
+            ctx.fillStyle = 'white';
+            ctx.font = '20px Arial';
+            ctx.fillText(player1Score, canvas.width / 4, 50);
+            ctx.fillText(player2Score, 3 * canvas.width / 4, 50);
+        }
+
+        function updateBullets() {
+            bullets.forEach((bullet, index) => {
+                bullet.x += bullet.dx;
+                bullet.y += bullet.dy;
+
+                if (bullet.x - bulletRadius < 0 || bullet.x + bulletRadius > canvas.width) {
+                    bullets.splice(index, 1);
+                }
+
+                if (bullet.x - bulletRadius < paddleWidth && bullet.y > player1Y && bullet.y < player1Y + paddleHeight) {
+                    player2Score++;
+                    bullets.splice(index, 1);
+                    player1Shake = 10;
+                }
+
+                if (bullet.x + bulletRadius > canvas.width - paddleWidth && bullet.y > player2Y && bullet.y < player2Y + paddleHeight) {
+                    player1Score++;
+                    bullets.splice(index, 1);
+                    player2Shake = 10;
+                }
             });
         }
 
-        function updateBalls() {
-            balls.forEach((ball, index) => {
-                // Update ball position
-                ball.x += ball.dx;
-                ball.y += ball.dy;
+        function update() {
+            player1Y += player1DY;
+            player2Y += player2DY;
 
-                if (ball.x - ballRadius < 0 || ball.x + ballRadius > canvas.width) {
-                    ball.dx = -ball.dx;
-                }
-                if (ball.y - ballRadius < 0 || ball.y + ballRadius > canvas.height) {
-                    ball.dy = -ball.dy;
-                }
+            if (player1Y < 0) player1Y = 0;
+            if (player1Y + paddleHeight > canvas.height) player1Y = canvas.height - paddleHeight;
+            if (player2Y < 0) player2Y = 0;
+            if (player2Y + paddleHeight > canvas.height) player2Y = canvas.height - paddleHeight;
 
-                // Add a new trace with full opacity
-                ball.traces.push({ x: ball.x, y: ball.y, alpha: 1 });
-                // Decrease alpha for each trace and remove faded ones
-                ball.traces.forEach(trace => {
-                    trace.alpha -= 0.02;
-                });
-                ball.traces = ball.traces.filter(trace => trace.alpha > 0);
+            updateBullets();
 
-                // Collision detection with other balls
-                for (let i = index + 1; i < balls.length; i++) {
-                    const dx = ball.x - balls[i].x;
-                    const dy = ball.y - balls[i].y;
-                    const distance = Math.sqrt(dx * dx + dy * dy);
-                    if (distance < ballRadius * 2) {
-                        ball.dx = -ball.dx;
-                        ball.dy = -ball.dy;
-                        balls[i].dx = -balls[i].dx;
-                        balls[i].dy = -balls[i].dy;
-                    }
-                }
-            });
+            if (player1Shake > 0) player1Shake--;
+            if (player2Shake > 0) player2Shake--;
         }
 
         function draw() {
-            // Draw a dark purple background with slight transparency to see old traces
-            ctx.fillStyle = 'rgba(75, 0, 130, 0.1)';
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            balls.forEach(drawTrace);
-            balls.forEach(drawBall);
+            drawPaddle(0, player1Y, 'darkblue', player1Shake ? Math.random() * 10 - 5 : 0);
+            drawPaddle(canvas.width - paddleWidth, player2Y, 'purple', player2Shake ? Math.random() * 10 - 5 : 0);
+            bullets.forEach(drawBullet);
+            drawScores();
         }
 
         function gameLoop() {
-            updateBalls();
+            update();
             draw();
             requestAnimationFrame(gameLoop);
         }
 
-        function addBall() {
-            if (balls.length >= maxBalls) {
-                balls.shift();
-            }
-            const angle = Math.random() * Math.PI * 2;
-            let x, y;
-            switch (cornerIndex) {
-                case 0:
-                    x = ballRadius;
-                    y = ballRadius;
-                    break;
-                case 1:
-                    x = canvas.width - ballRadius;
-                    y = ballRadius;
-                    break;
-                case 2:
-                    x = ballRadius;
-                    y = canvas.height - ballRadius;
-                    break;
-                case 3:
-                    x = canvas.width - ballRadius;
-                    y = canvas.height - ballRadius;
-                    break;
-            }
-            cornerIndex = (cornerIndex + 1) % 4;
-            balls.push({
-                x: x,
-                y: y,
-                dx: Math.cos(angle) * 3,
-                dy: Math.sin(angle) * 3,
-                traces: []
-            });
-        }
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'w') player1DY = -5;
+            if (e.key === 's') player1DY = 5;
+            if (e.key === 'ArrowUp') player2DY = -5;
+            if (e.key === 'ArrowDown') player2DY = 5;
+            if (e.key === 'd') bullets.push({ x: paddleWidth, y: player1Y + paddleHeight / 2, dx: 5, dy: 0 });
+            if (e.key === 'ArrowLeft') bullets.push({ x: canvas.width - paddleWidth, y: player2Y + paddleHeight / 2, dx: -5, dy: 0 });
+        });
 
-        function clearCanvas() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            balls = [];
-        }
+        document.addEventListener('keyup', (e) => {
+            if (e.key === 'w' || e.key === 's') player1DY = 0;
+            if (e.key === 'ArrowUp' || e.key === 'ArrowDown') player2DY = 0;
+        });
 
-        setInterval(addBall, 1000); // Add a new ball every second
-        setInterval(clearCanvas, 60000); // Clear the canvas every 60 seconds
         gameLoop();
+        
     </script>
 
 </body>
