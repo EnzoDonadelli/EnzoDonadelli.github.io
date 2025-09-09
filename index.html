@@ -4,172 +4,334 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Enzo Donadelli</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
-        html, body {
+        /* General Styles */
+        body {
+            background-color: #1a1a2e;
+            color: #d8b4fe; /* Light purple color */
+            font-family: 'Poppins', sans-serif;
+            text-align: center;
+            overflow-x: hidden;
+            font-size: 20px;
+            position: relative;
+        }
+
+        /* Fixed Header */
+        header {
+            background-color: rgba(26, 26, 46, 0.9);
+            padding: 20px;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            font-size: 2rem;
             margin: 0;
-            padding: 0;
-            height: 100%;
+            color: #d8b4fe; /* Matching light purple */
         }
-        #myCanvas {
-            background-color: grey;
-            display: block;
-            width: 100vw;
+
+        header a {
+            color: #d8b4fe;
+            text-decoration: none;
+            padding: 12px 18px;
+            border-radius: 5px;
+            font-size: 1.2rem;
+            transition: background 0.3s ease;
+        }
+
+        header a:hover {
+            background: rgba(216, 180, 254, 0.2);
+        }
+
+        /* Sections */
+        section {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 60px 20px;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+
+        section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Hero Section */
+        .hero {
             height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
         }
-        #centerText {
-            font-family: 'Monaco', sans-serif;
+
+        /* 3D Spinning Globe */
+        .globe-container {
             position: absolute;
+            width: 450px;
+            height: 450px;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            color: white;
-            font-size: 70px;
-            text-align: center;
+            perspective: 1000px;
+            opacity: 0.9;
         }
-        #centerText2 {
-            font-family: 'Monaco', sans-serif;
+
+        .globe {
             position: absolute;
-            top: 57%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
-            font-size: 30px;
-            text-align: center;
+            width: 100%;
+            height: 100%;
+            animation: spin 10s linear infinite;
+            transform-style: preserve-3d;
         }
+
+        .dot {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background-color: #d8b4fe;
+            border-radius: 50%;
+            opacity: 0.6;
+        }
+
+        @keyframes spin {
+            from { transform: rotateY(0deg) rotateX(20deg); }
+            to { transform: rotateY(360deg) rotateX(20deg); }
+        }
+
+        /* Typing Animation */
+        .title {
+            font-size: 6rem;
+            font-weight: bold;
+            white-space: nowrap;
+            overflow: hidden;
+            border-right: 4px solid #d8b4fe;
+            display: inline-block;
+        }
+
+        /* About Section */
+        .about-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 25px;
+            border-radius: 10px;
+            width: 500px; /* Increased size */
+        }
+
+        .about-card img {
+            width: 100%; /* Ensures full image is shown */
+            height: auto;
+            border-radius: 10px;
+        }
+
+        .social-media {
+            margin-bottom: 20px;
+        }
+
+        .social-media a {
+            color: var(--light-text);
+            font-size: 2cm;
+            margin: 0 10px;
+            transition: color 0.3s ease;
+        }
+
+        .social-media a:hover {
+            color: var(--primary-color);
+        }
+
+
     </style>
 </head>
 <body>
 
-    <canvas id="myCanvas"></canvas>
-    <div id="centerText">Enzo Donadelli</div>
-    <div id="centerText2">Web Developer</div>
+    <!-- Header -->
+    <header>
+        <h1>Enzo Donadelli</h1>
+        <nav>
+            <a href="#about">About</a>
+            <a href="#projects">Projects</a>
+            <a href="#contact">Contact</a>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="globe-container">
+            <div class="globe" id="globe"></div>
+        </div>
+        <div class="content">
+            <h1 class="title" id="typing-text"></h1>
+            <p class="subtitle" style="font-size: 2rem;">Web Developer</p>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about">
+        <h2 style="font-size: 3rem;">About Me</h2>
+        <div class="about-card">
+            <img src="/image/240220_C_Enzo Donadelli_Headshot-1.jpg" alt="Profile">
+            <p>Passionate about changing the world through technology | Computer Science Student | Photography</p>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <!-- Projects Section -->
+<!-- Projects Section -->
+<section id="projects">
+    <h2 style="font-size: 3rem;">Projects</h2>
+
+    <div class="projects-container">
+        <!-- Notflix Project Card -->
+        <a href="https://github.com/principia-college/notflix-EnzoDonadelli.git" target="_blank" class="project-link">
+            <div class="project-card">
+                <img src="/image/notflix.jpg" alt="Notflix Project">
+                <h3>Notflix</h3>
+                <p>A HTML, CSS, Javascript and SQL project in which I created a Netflix copy called Notflix and used my own database to add the showcased movies.</p>
+            </div>
+        </a>
+
+        <!-- Board Games Project Card -->
+        <a href="https://github.com/EnzoDonadelli/boardGames.git" target="_blank" class="project-link">
+            <div class="project-card">
+                <img src="/image/boardGames.jpg" alt="Board Games Project">
+                <h3>Board Games</h3>
+                <p>A Java project in which I coded a variety of board games with different pieces and playstyles using inheritance. Also includes a limited artificial inteligence that can play all games through polymorphism.</p>
+            </div>
+        </a>
+
+        <!-- Resume Project Card -->
+        <a href="/path/to/resume.pdf" target="_blank" class="project-link" style="width: 100%; display: flex; justify-content: center;">
+            <div class="project-card" style="width: 200px; padding: 20px;">
+            <h3>My Resume</h3>
+            </div>
+        </a>
+    </div>
+</section>
+
+<style>
+    /* Projects Container */
+    .projects-container {
+        display: flex;
+        justify-content: center;
+        gap: 50px;
+        flex-wrap: wrap;
+        margin-top: 20px;
+    }
+
+    /* Project Links (Clickable) */
+    .project-link {
+        text-decoration: none;
+    }
+
+    /* Project Card */
+    .project-card {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 30px;
+        border-radius: 15px;
+        width: 400px; /* Increased size */
+        text-align: center;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .project-card img {
+        width: 100%;
+        height: auto;
+        border-radius: 15px;
+    }
+
+    .project-card h3 {
+        margin-top: 15px;
+        font-size: 2rem; /* Larger text */
+        color: #d8b4fe;
+    }
+
+    .project-card p {
+        font-size: 1.4rem; /* Bigger text */
+        color: #e0aaff;
+    }
+
+    .project-card:hover {
+        transform: scale(1.07);
+        box-shadow: 0 0 20px rgba(216, 180, 254, 0.5);
+    }
+</style>
+
+
+
+    <!-- Contact Section -->
+    <section id="contact">
+        <h2 style="font-size: 3rem;">Contact</h2>
+        
+        <div class="social-media">
+            <a href="linkedin.com/in/enzo-martins-donadelli-97a0812b3/" target="_blank"><i class="fa-brands fa-linkedin"></i></a>
+            <a href="https://www.instagram.com/enzodonadelli/"><i class="fa-solid fa-envelope"></i></a>
+            <a href="https://www.instagram.com/enzodonadelli/"><i class="fa-brands fa-instagram"></i></a>
+        </div>
+        
+    </section>
+
     <script>
-        const canvas = document.getElementById('myCanvas');
-        const ctx = canvas.getContext('2d');
+        // Typing Animation
+        const nameText = "Enzo Donadelli";
+        const typingElement = document.getElementById("typing-text");
+        let charIndex = 0;
 
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
-
-        const paddleWidth = 20;
-        const paddleHeight = 150;
-        const ballRadius = 10;
-        const bulletRadius = 5;
-
-        let player1Y = (canvas.height - paddleHeight) / 2;
-        let player2Y = (canvas.height - paddleHeight) / 2;
-        let player1DY = 0;
-        let player2DY = 0;
-
-        let bullets = [];
-
-        let player1Score = 0;
-        let player2Score = 0;
-
-        let player1Shake = 0;
-        let player2Shake = 0;
-
-        function drawPaddle(x, y, color, shake) {
-            ctx.fillStyle = color;
-            ctx.fillRect(x + shake, y, paddleWidth, paddleHeight);
+        function typeText() {
+            if (charIndex < nameText.length) {
+                typingElement.innerHTML += nameText.charAt(charIndex);
+                charIndex++;
+                setTimeout(typeText, 100);
+            } else {
+                typingElement.style.borderRight = "none";
+            }
         }
 
-        function drawBall(ball) {
-            ctx.beginPath();
-            ctx.arc(ball.x, ball.y, ballRadius, 0, Math.PI * 2);
-            ctx.fillStyle = 'white';
-            ctx.fill();
-            ctx.closePath();
+        window.onload = () => {
+            typeText();
+            generateGlobe();
+        };
+
+        // Function to Generate 3D Spinning Globe Dots
+        function generateGlobe() {
+            const globeElement = document.getElementById("globe");
+            const numDots = 120;
+
+            for (let i = 0; i < numDots; i++) {
+                let dot = document.createElement("div");
+                dot.classList.add("dot");
+
+                let lat = Math.acos(-1 + (2 * i) / numDots);
+                let lon = Math.sqrt(numDots * Math.PI) * lat;
+
+                let x = Math.sin(lat) * Math.cos(lon) * 180;
+                let y = Math.sin(lat) * Math.sin(lon) * 180;
+                let z = Math.cos(lat) * 180;
+
+                dot.style.transform = `translate3d(${x}px, ${y}px, ${z}px)`;
+                globeElement.appendChild(dot);
+            }
         }
 
-        function drawBullet(bullet) {
-            ctx.beginPath();
-            ctx.arc(bullet.x, bullet.y, bulletRadius, 0, Math.PI * 2);
-            ctx.fillStyle = 'red';
-            ctx.fill();
-            ctx.closePath();
-        }
-
-        function drawScores() {
-            ctx.fillStyle = 'white';
-            ctx.font = '20px Arial';
-            ctx.fillText(player1Score, canvas.width / 4, 50);
-            ctx.fillText(player2Score, 3 * canvas.width / 4, 50);
-        }
-
-        function updateBullets() {
-            bullets.forEach((bullet, index) => {
-                bullet.x += bullet.dx;
-                bullet.y += bullet.dy;
-
-                if (bullet.x - bulletRadius < 0 || bullet.x + bulletRadius > canvas.width) {
-                    bullets.splice(index, 1);
-                }
-
-                if (bullet.x - bulletRadius < paddleWidth && bullet.y > player1Y && bullet.y < player1Y + paddleHeight) {
-                    player2Score++;
-                    bullets.splice(index, 1);
-                    player1Shake = 10;
-                }
-
-                if (bullet.x + bulletRadius > canvas.width - paddleWidth && bullet.y > player2Y && bullet.y < player2Y + paddleHeight) {
-                    player1Score++;
-                    bullets.splice(index, 1);
-                    player2Shake = 10;
+        document.addEventListener("scroll", () => {
+            document.querySelectorAll("section").forEach(section => {
+                if (section.getBoundingClientRect().top < window.innerHeight * 0.8) {
+                    section.classList.add("visible");
                 }
             });
-        }
-
-        function update() {
-            player1Y += player1DY;
-            player2Y += player2DY;
-
-            if (player1Y < 0) player1Y = 0;
-            if (player1Y + paddleHeight > canvas.height) player1Y = canvas.height - paddleHeight;
-            if (player2Y < 0) player2Y = 0;
-            if (player2Y + paddleHeight > canvas.height) player2Y = canvas.height - paddleHeight;
-
-            updateBullets();
-
-            if (player1Shake > 0) player1Shake--;
-            if (player2Shake > 0) player2Shake--;
-        }
-
-        function draw() {
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            drawPaddle(0, player1Y, 'darkblue', player1Shake ? Math.random() * 10 - 5 : 0);
-            drawPaddle(canvas.width - paddleWidth, player2Y, 'purple', player2Shake ? Math.random() * 10 - 5 : 0);
-            bullets.forEach(drawBullet);
-            drawScores();
-        }
-
-        function gameLoop() {
-            update();
-            draw();
-            requestAnimationFrame(gameLoop);
-        }
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'w') player1DY = -5;
-            if (e.key === 's') player1DY = 5;
-            if (e.key === 'ArrowUp') player2DY = -5;
-            if (e.key === 'ArrowDown') player2DY = 5;
-            if (e.key === 'd') bullets.push({ x: paddleWidth, y: player1Y + paddleHeight / 2, dx: 5, dy: 0 });
-            if (e.key === 'ArrowLeft') bullets.push({ x: canvas.width - paddleWidth, y: player2Y + paddleHeight / 2, dx: -5, dy: 0 });
         });
-
-        document.addEventListener('keyup', (e) => {
-            if (e.key === 'w' || e.key === 's') player1DY = 0;
-            if (e.key === 'ArrowUp' || e.key === 'ArrowDown') player2DY = 0;
-        });
-
-        gameLoop();
-        
     </script>
 
 </body>
